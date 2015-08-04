@@ -106,6 +106,10 @@ margin: 0.5em;
 	MJSIO=function(){"use strict";function log(e){return Math.log(e)/Math.log(10)}function getNumber(ele){for(var e=document.getElementById(ele),c=e.value+" ",numbers="0123456789",si_powers=[-24,-21,-18,-15,-12,-9,-6,-3,3,6,9,12,15,18,21,24],s=c[0],i=1;i<c.length;i++){var j="yzafpnumkMGTPEZY".indexOf(c[i]);if(-1!=j){var k=numbers.indexOf(c[i-1]);s+=-1!=k?"e"+si_powers[j]+" ":c[i]}else s+=c[i]}var r,fails=s.search(/,|window|[$]|this|document|eval|self|=|_|'|"|>|<|,|;|{|}/,"");if(-1!=fails)return e.className=e.className+" MJSIOFAIL",e.title=r,0/0;try{r=parseFloat(eval(s)),e.className=e.className.replace(/MJSIOFAIL/g,"")}catch(err){r=parseFloat(s),e.className=e.className+" MJSIOFAIL"}return isFinite(r)||(e.className=e.className+" MJSIOFAIL"),e.title=r,r}function eng_form_postfix(e,t){if(isFinite(t)||(t=5),t=Math.min(Math.max(t,1),21),Math.abs(e)<1e-24||Math.abs(e)>=1e27)return e.toPrecision(t);var a=0>e?"-":"";e=Math.abs(e);var s=Math.floor(Math.log10(e)/3),r=e*Math.pow(1e3,-s),i=(r.toFixed(Math.max(t-3,0))+".").split("."),n=(r.toFixed(Math.max(0,t-i[0].length))+".").split("."),o=n[0]+"."+n[1]+si_prefixes[s+8];return 0!=n[1].length&&0==s&&(o=n[0]+"."+n[1]),0==n[1].length&&0!=s&&(o=n[0]+si_prefixes[s+8]),0==n[1].length&&0==s&&(o=n[0]),a+o}function setNumber(e,t,a){isFinite(a)||(a=3),document.getElementById(e).textContent=eng_form_postfix(t,a)}var abs=Math.abs,acos=Math.acos,asin=Math.asin,atan=Math.atan,ceil=Math.ceil,cos=Math.cos,exp=Math.exp,floor=Math.floor,pi=Math.PI,e=Math.E,ln=Math.log,pow=Math.pow,random=Math.random,round=Math.round,sin=Math.sin,sqrt=Math.sqrt,tan=Math.tan,si_prefixes=["y","z","a","f","p","n",String.fromCharCode(181),"m",".","k","M","G","T","P","E","Z","Y"];return{getNumber:getNumber,setNumber:setNumber}}();
 	</textarea>
 
+	<p>
+	If you like this, please stop by the <a href="https://github.com/GeneralSarsby/MJSIO">github</a> page.
+	</p>
+	
 	<p> I release this code under the <a href="http://www.wtfpl.net/about">WTFPL version 2 licence</a>.
 	
 	<!-- 
@@ -125,9 +129,7 @@ as the name is changed.
  
  -->
 	
-
 	<script>
-	
 function onload(){
 setTimeout(function(){ c() }, 100 );
 setTimeout(function(){ ohms() }, 100 );
@@ -149,7 +151,6 @@ MJSIO.setNumber('result3',MJSIO.getNumber('equ3'),5);
 function ohms(){
 MJSIO.setNumber('i', MJSIO.getNumber('v')  / MJSIO.getNumber('r'), 3);
 }
-
     </script>
 	
   </body>
