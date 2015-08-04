@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <style>
+	html{-webkit-text-size-adjust:100%;
+	padding-bottom:4em}
+      body {
+        margin: 1em;
+        padding: 1em;
+		margin-top:0em;
+		padding-top:0em;
+		margin:auto;
+		max-width:50em;
+      }
+	  span{ margin: 0em;}
+	  .box{
+	  border: 1px black solid;
+	  padding: 1em;
+margin: 0.5em;
+	  }
+	  h2{
+	  font-weight:normal;
+	  }
+	  textarea{width:100%}
+	  .MJSIOFAIL{
+	  color:red;
+	  }
+	  
+    </style>
+	<script src="mjsio.js"></script>
+	
+  </head>
+  <body onload="onload()">
+  <header>
+	<h1>Simple Calculator Input</h1>
+	<aside>Matthew Sarsby - 2015-08</aside>
+	</header>
+	
+	<p>You can enter expressions into the boxes (e.g. "100e-9*100e-9") and use SI number postfixes (e.g. "1k" or "4.7n").</p>
+	
+	<h2>Examples:</h2>
+	<div class='box'>
+	Si numbers: <input type="text" id="equ1" value="25u" oninput="update()">
+		= <span id="result1"> </span><br>
+		
+	Basic Maths: <input type="text" id="equ2" value="1M + 200k" oninput="update()">
+		= <span id="result2"> </span><br>
+		
+	More Maths: <input type="text" id="equ3" value="sin(2*pi) * 1k / 3n" oninput="update()">
+		= <span id="result3"> </span><br>
+	</div>
+	
+	<p>Simple applications are engineering style calculators. E.g. This ohms law calculator: from six 3.3 volt cells over a 47k resistor can be written with ease:</p>
+	<div class='box' id='mainbox'>
+	V: <input type="text" id="v" value="3.3*6" oninput="ohms()">Volts<br>
+	R: <input type="text" id="r" value="47k" oninput="ohms()">Ohms<br>
+	I = <span id="i"> </span>A
+	</div>
+	
+	<h2>API:</h2>
+	<p>
+	This is available as <code>var myNumber = MJSIO.getNumber(elementID)</code> from the element ID of an input box.
+	MJSIO also provides <code>MJSIO.setNumber(elementID,myNumber[,precision])</code> to set the <code>textContent</code> of an element to a number written in engineering form.
+	Precision defaults to 5. I've used this above to set the contence of a <code>span</code> to just what is read from the input.
+	</p>
+	<p> A class <code>MJSIOFAIL</code> is added to the input if the input fails to evaluate. I've put <code>.MJSIOFAIL{
+	  color:red;
+	  }</code> into the style of this page.
+	</p>
+	
+	<h2>Why</h2>
+	<p>
+	To make things better. I've made some relativly bug free code so you don't have too. It does this one thing, well enough.
+	</p>
+	
+	<h2>Notes:</h2>
+	<p>
+	The si postfixes on numbers are worked out by simply replacing any valid SI postfix that occurs directly after a number with it's corresponding exponent.
+	This means operator precedence is correct.
+	Then the expression is ran eval-style with basic filtering.
+	</p>
+	<p>
+	Many maths functions are moved to the local namespace so you can use:
+	abs, acos, asin, atan, ceil, cos, exp, floor, pow, random, round, sin, sqrt, and tan. ln is natural log, and log is log10.
+	Constants e and pi are available too.
+	</p>
+	Hover over the text input to see how the numbers are interpreted.
+	This is done by setting the <code>.title</code> to the result, so desktop users can see the result of the input without the developer having to code some sort of mirror.
+	</p>
+	<p> These cases should fail:
+	</p>
+	<div class='box'>
+	bad input: <input type="text" id="bad1" value="fail" oninput="MJSIO.getNumber('bad1')"><br>
+	bad input: <input type="text" id="bad2" value="window.getElementByID('bad2')" oninput="MJSIO.getNumber('bad2')"><br>
+	bad input: <input type="text" id="bad3" value="sqrt(-1)" oninput="MJSIO.getNumber('bad3')"><br>
+	</div>
+	
+	<h2>Use it:</h2>
+	<p>
+	Include <code>&lt;script src="<a href='mjsio.js'>mjsio.js</a>"&gt;&lt;/script&gt;</code> or copy and paste this:
+	</p>
+	<textarea>
+	MJSIO=function(){"use strict";function log(e){return Math.log(e)/Math.log(10)}function getNumber(ele){for(var e=document.getElementById(ele),c=e.value+" ",numbers="0123456789",si_powers=[-24,-21,-18,-15,-12,-9,-6,-3,3,6,9,12,15,18,21,24],s=c[0],i=1;i<c.length;i++){var j="yzafpnumkMGTPEZY".indexOf(c[i]);if(-1!=j){var k=numbers.indexOf(c[i-1]);s+=-1!=k?"e"+si_powers[j]+" ":c[i]}else s+=c[i]}var r,fails=s.search(/,|window|[$]|this|document|eval|self|=|_|'|"|>|<|,|;|{|}/,"");if(-1!=fails)return e.className=e.className+" MJSIOFAIL",e.title=r,0/0;try{r=parseFloat(eval(s)),e.className=e.className.replace(/MJSIOFAIL/g,"")}catch(err){r=parseFloat(s),e.className=e.className+" MJSIOFAIL"}return isFinite(r)||(e.className=e.className+" MJSIOFAIL"),e.title=r,r}function eng_form_postfix(e,t){if(isFinite(t)||(t=5),t=Math.min(Math.max(t,1),21),Math.abs(e)<1e-24||Math.abs(e)>=1e27)return e.toPrecision(t);var a=0>e?"-":"";e=Math.abs(e);var s=Math.floor(Math.log10(e)/3),r=e*Math.pow(1e3,-s),i=(r.toFixed(Math.max(t-3,0))+".").split("."),n=(r.toFixed(Math.max(0,t-i[0].length))+".").split("."),o=n[0]+"."+n[1]+si_prefixes[s+8];return 0!=n[1].length&&0==s&&(o=n[0]+"."+n[1]),0==n[1].length&&0!=s&&(o=n[0]+si_prefixes[s+8]),0==n[1].length&&0==s&&(o=n[0]),a+o}function setNumber(e,t,a){isFinite(a)||(a=3),document.getElementById(e).textContent=eng_form_postfix(t,a)}var abs=Math.abs,acos=Math.acos,asin=Math.asin,atan=Math.atan,ceil=Math.ceil,cos=Math.cos,exp=Math.exp,floor=Math.floor,pi=Math.PI,e=Math.E,ln=Math.log,pow=Math.pow,random=Math.random,round=Math.round,sin=Math.sin,sqrt=Math.sqrt,tan=Math.tan,si_prefixes=["y","z","a","f","p","n",String.fromCharCode(181),"m",".","k","M","G","T","P","E","Z","Y"];return{getNumber:getNumber,setNumber:setNumber}}();
+	</textarea>
+
+	<p> I release this code under the <a href="http://www.wtfpl.net/about">WTFPL version 2 licence</a>.
+	
+	<!-- 
+DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+    Version 2, December 2004
+
+Copyright (C) 2015 MJS 
+
+Everyone is permitted to copy and distribute verbatim or modified
+copies of this license document, and changing it is allowed as long
+as the name is changed.
+
+           DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+ 0. You just DO WHAT THE FUCK YOU WANT TO.
+ 
+ -->
+	
+
+	<script>
+	
+function onload(){
+setTimeout(function(){ c() }, 100 );
+setTimeout(function(){ ohms() }, 100 );
+MJSIO.getNumber('bad1');
+MJSIO.getNumber('bad2');
+MJSIO.getNumber('bad3');
+}
+	
+function update(){
+c(); //just call the main calculation funcion.
+}
+
+function c(){
+MJSIO.setNumber('result1',MJSIO.getNumber('equ1'),5);
+MJSIO.setNumber('result2',MJSIO.getNumber('equ2'),5);
+MJSIO.setNumber('result3',MJSIO.getNumber('equ3'),5);
+}
+
+function ohms(){
+MJSIO.setNumber('i', MJSIO.getNumber('v')  / MJSIO.getNumber('r'), 3);
+}
+
+    </script>
+	
+  </body>
+</html>
